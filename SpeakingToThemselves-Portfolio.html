@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Building Before the Brief — madevisible</title>
+<style>
+  :root {
+    --navy: #1B3A5C;
+    --teal: #2A7F7F;
+    --teal-light: #7EC8C8;
+    --teal-bg: #EEF6F6;
+    --warn-bg: #FDF8EE;
+    --warn: #C0841A;
+    --text: #2c2c2c;
+    --text-light: #555;
+    --border: #ddd;
+    --white: #fff;
+    --bef-dark: #4a4a4a;
+    --bef-mid: #7a7060;
+    --bef-accent: #a09070;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: Arial, sans-serif; font-size: 10.5pt; color: var(--text); background: var(--white); line-height: 1.7; }
+  nav { background: var(--navy); padding: 14px 40px; display: flex; justify-content: space-between; align-items: center; }
+  nav a { color: var(--teal-light); text-decoration: none; font-family: Arial, sans-serif; font-size: 9pt; letter-spacing: 0.05em; }
+  nav .logo { font-size: 11pt; font-weight: bold; color: white; font-family: Arial, sans-serif; }
+  nav .logo span { color: var(--teal-light); }
+  .hero { background: var(--navy); color: white; padding: 64px 40px 48px; max-width: 900px; margin: 0 auto; }
+  .disclaimer-row { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 24px; }
+  .disclaimer { display: inline-block; background: rgba(126,200,200,0.15); border: 1px solid var(--teal-light); color: var(--teal-light); font-family: Arial, sans-serif; font-size: 7.5pt; letter-spacing: 0.07em; text-transform: uppercase; padding: 4px 12px; border-radius: 2px; }
+  .hero h1 { font-size: 2.4em; font-weight: normal; line-height: 1.2; margin-bottom: 16px; }
+  .hero h1 em { color: var(--teal-light); font-style: normal; }
+  .hero .subtitle { font-family: Arial, sans-serif; font-size: 10pt; color: rgba(255,255,255,0.7); max-width: 620px; line-height: 1.6; margin-bottom: 32px; }
+  .hero .meta { display: flex; gap: 32px; flex-wrap: wrap; font-family: Arial, sans-serif; font-size: 8.5pt; color: rgba(255,255,255,0.5); border-top: 1px solid rgba(255,255,255,0.15); padding-top: 20px; }
+  .hero .meta strong { color: var(--teal-light); display: block; margin-bottom: 2px; }
+  .content { max-width: 900px; margin: 0 auto; padding: 0 40px 80px; }
+  .section { margin-top: 56px; }
+  .section-label { font-family: Arial, sans-serif; font-size: 8pt; letter-spacing: 0.12em; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+  .section h2 { font-size: 1.45em; font-weight: normal; color: var(--navy); border-bottom: 2px solid var(--teal); padding-bottom: 10px; margin-bottom: 20px; }
+  .section p { margin-bottom: 16px; max-width: 720px; }
+  .box { background: var(--teal-bg); border-left: 4px solid var(--teal); padding: 16px 20px; margin: 20px 0; font-family: Arial, sans-serif; font-size: 9.5pt; line-height: 1.65; }
+  .box strong { color: var(--navy); }
+  .box-warn { background: var(--warn-bg); border-left: 4px solid var(--warn); padding: 16px 20px; margin: 20px 0; font-family: Arial, sans-serif; font-size: 9.5pt; line-height: 1.65; }
+  .box-warn strong { color: var(--warn); }
+  .problem-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin: 24px 0; }
+  .problem-card { border: 1px solid var(--border); border-top: 3px solid var(--teal); padding: 16px 18px; }
+  .problem-card h4 { font-family: Arial, sans-serif; font-size: 9pt; color: var(--navy); margin-bottom: 6px; }
+  .problem-card p { font-size: 9pt; color: var(--text-light); line-height: 1.55; margin: 0; max-width: 100%; }
+  .process-steps { margin: 24px 0; }
+  .process-step { display: grid; grid-template-columns: 40px 1fr; gap: 16px; margin-bottom: 22px; align-items: start; }
+  .step-num { width: 36px; height: 36px; background: var(--navy); color: var(--teal-light); font-family: Arial, sans-serif; font-size: 10pt; font-weight: bold; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .step-content h4 { font-family: Arial, sans-serif; font-size: 9.5pt; color: var(--navy); margin-bottom: 4px; }
+  .step-content p { font-size: 9.5pt; color: var(--text-light); max-width: 640px; margin: 0; line-height: 1.65; }
+  .mockup-container { margin: 32px 0; border: 1px solid var(--border); overflow: hidden; }
+  .mockup-label { background: var(--navy); color: rgba(255,255,255,0.55); font-family: Arial, sans-serif; font-size: 8pt; padding: 10px 16px; letter-spacing: 0.03em; line-height: 1.6; }
+  .mockup-label strong { color: var(--teal-light); }
+  .mockup-label em { color: rgba(255,255,255,0.38); font-style: normal; }
+  .b-nav { background: var(--bef-dark); padding: 10px 20px; display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+  .b-logo-a { border: 2px solid var(--bef-accent); color: white; font-family: Arial, sans-serif; font-size: 9pt; font-weight: bold; padding: 3px 10px; letter-spacing: 0.04em; }
+  .b-logo-sep { color: rgba(255,255,255,0.2); padding: 0 2px; font-family: Arial; }
+  .b-logo-b { background: var(--bef-mid); color: white; font-family: Arial, sans-serif; font-size: 9pt; font-weight: bold; padding: 3px 10px; }
+  .b-nav-links { display: flex; gap: 12px; margin-left: auto; flex-wrap: wrap; }
+  .b-nav-links span { color: rgba(255,255,255,0.6); font-family: Arial, sans-serif; font-size: 7.5pt; }
+  .b-hero { background: #c8c2b4; padding: 28px 24px; color: white; text-align: center; }
+  .b-stock-note { display: inline-block; background: rgba(0,0,0,0.18); border: 1px dashed rgba(255,255,255,0.3); color: rgba(255,255,255,0.65); font-family: Arial, sans-serif; font-size: 7.5pt; padding: 2px 8px; margin-bottom: 10px; }
+  .b-hero h2 { font-family: Arial, sans-serif; font-size: 1.1em; font-weight: bold; margin-bottom: 8px; border: none; padding: 0; color: white; }
+  .b-hero p { font-family: Arial, sans-serif; font-size: 8.5pt; opacity: 0.85; margin-bottom: 14px; max-width: 100%; }
+  .b-cta-a { display: inline-block; background: var(--bef-accent); color: #222; font-family: Arial, sans-serif; font-size: 8pt; font-weight: bold; padding: 7px 14px; margin-right: 6px; }
+  .b-cta-b { display: inline-block; background: var(--bef-mid); color: white; font-family: Arial, sans-serif; font-size: 8pt; padding: 7px 14px; }
+  .b-body { display: grid; grid-template-columns: 1fr 1fr 1fr; background: white; }
+  .b-col { padding: 16px; border-right: 1px solid #eee; font-family: Arial, sans-serif; font-size: 8pt; }
+  .b-col:last-child { border-right: none; }
+  .b-col h4 { color: var(--bef-dark); margin-bottom: 6px; font-size: 8.5pt; }
+  .b-col p { color: #777; line-height: 1.5; max-width: 100%; margin: 0; }
+  .b-col.flagged { background: #faf8f4; }
+  .annotation { display: inline-block; background: #884400; color: white; font-family: Arial, sans-serif; font-size: 6.5pt; padding: 1px 5px; border-radius: 8px; margin-left: 4px; vertical-align: middle; }
+  .a-nav { background: var(--navy); padding: 12px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+  .a-logo { font-family: Arial, sans-serif; font-size: 11pt; font-weight: bold; color: white; }
+  .a-logo span { color: var(--teal-light); }
+  .a-nav-links { display: flex; gap: 18px; flex-wrap: wrap; }
+  .a-nav-links span { color: rgba(255,255,255,0.55); font-family: Arial, sans-serif; font-size: 8pt; }
+  .a-nav-links span.active { color: white; border-bottom: 1px solid var(--teal-light); padding-bottom: 1px; }
+  .a-nav-links span.partner { border-left: 1px solid rgba(255,255,255,0.15); padding-left: 16px; color: var(--teal-light); }
+  .a-hero { background: var(--navy); padding: 36px 24px 28px; display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: center; }
+  .a-hero-text h2 { font-size: 1.35em; font-weight: normal; color: white; line-height: 1.3; margin-bottom: 10px; border: none; padding: 0; }
+  .a-hero-text h2 em { color: var(--teal-light); font-style: normal; }
+  .a-hero-text p { font-family: Arial, sans-serif; font-size: 8.5pt; color: rgba(255,255,255,0.6); margin-bottom: 18px; max-width: 100%; line-height: 1.55; }
+  .a-cta-primary { display: inline-block; background: var(--teal); color: white; font-family: Arial, sans-serif; font-size: 8.5pt; padding: 10px 18px; margin-right: 10px; }
+  .a-cta-sec { color: var(--teal-light); font-family: Arial, sans-serif; font-size: 8.5pt; text-decoration: underline; }
+  .a-user-cards { display: flex; flex-direction: column; gap: 8px; }
+  .a-user-card { background: rgba(255,255,255,0.07); border-left: 3px solid var(--teal); padding: 10px 14px; font-family: Arial, sans-serif; font-size: 8pt; color: rgba(255,255,255,0.75); line-height: 1.5; }
+  .a-user-card strong { color: var(--teal-light); display: block; font-size: 7.5pt; text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 2px; }
+  .a-body { padding: 24px; background: #fafafa; display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+  .a-main h4, .a-sidebar h4 { font-family: Arial, sans-serif; font-size: 8.5pt; color: var(--navy); text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 10px; }
+  .service-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .service-tile { background: white; border: 1px solid var(--border); border-top: 2px solid var(--teal); padding: 12px; font-family: Arial, sans-serif; font-size: 7.5pt; }
+  .service-tile strong { color: var(--navy); display: block; margin-bottom: 3px; font-size: 8pt; }
+  .service-tile p { color: #888; max-width: 100%; margin: 0; line-height: 1.5; }
+  .a-cta-box { background: var(--teal-bg); border: 1px solid var(--teal); padding: 14px; font-family: Arial, sans-serif; }
+  .a-cta-box p { font-size: 8pt; color: var(--text-light); margin-bottom: 10px; max-width: 100%; line-height: 1.5; }
+  .a-cta-box button { background: var(--teal); color: white; border: none; padding: 9px 14px; font-family: Arial, sans-serif; font-size: 8pt; width: 100%; text-align: left; cursor: pointer; }
+  table.compare { width: 100%; border-collapse: collapse; margin: 24px 0; font-family: Arial, sans-serif; font-size: 9pt; }
+  table.compare th { background: var(--navy); color: white; padding: 10px 14px; text-align: left; font-weight: normal; }
+  table.compare th.teal { background: var(--teal); }
+  table.compare td { padding: 10px 14px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  table.compare tr:nth-child(even) td { background: #f9f9f9; }
+  table.compare td.was { color: #884400; }
+  table.compare td.now { color: #1a6060; }
+  hr.rule { border: none; border-top: 1px solid var(--border); margin: 48px 0 0; }
+  .tags { margin-top: 16px; }
+  .tag { display: inline-block; background: var(--teal-bg); color: var(--teal); padding: 3px 10px; border-radius: 2px; font-family: Arial, sans-serif; font-size: 8.5pt; margin: 2px; }
+  .answer-box { background: var(--navy); color: white; padding: 32px 36px; margin: 48px 0 0; }
+  .answer-box h3 { font-family: Arial, sans-serif; font-size: 10pt; color: var(--teal-light); letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 14px; font-weight: normal; }
+  .answer-box p { max-width: 680px; line-height: 1.7; color: rgba(255,255,255,0.85); margin-bottom: 14px; }
+  .answer-box p.closing { color: rgba(255,255,255,0.5); font-family: Arial, sans-serif; font-size: 9pt; }
+  footer { background: var(--navy); color: rgba(255,255,255,0.4); text-align: center; padding: 24px 40px; font-family: Arial, sans-serif; font-size: 8.5pt; }
+  footer a { color: var(--teal-light); text-decoration: none; }
+  @media (max-width: 680px) {
+    .problem-grid, .b-body, .a-hero, .a-body, .service-tiles { grid-template-columns: 1fr; }
+    .hero, .content { padding-left: 20px; padding-right: 20px; }
+    nav { padding: 12px 20px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <span class="logo">made<span>visible</span></span>
+  <a href="index.html">Back to portfolio</a>
+</nav>
+
+<div class="hero">
+  <div class="disclaimer-row">
+    <span class="disclaimer">Fictional case based on real experience</span>
+    <span class="disclaimer">Company names and identifying details have been changed</span>
+    <span class="disclaimer">Mock-ups are deliberately simplified to illustrate structural patterns</span>
+  </div>
+  <h1>Building Before<br><em>the Brief</em></h1>
+  <p class="subtitle">A website redesign initiated without a shared brief, produced under constrained conditions, and delivered anyway. Here is what I would have done differently.</p>
+  <div class="meta">
+    <div><strong>Type</strong>UX Writing · Content Strategy · Information Architecture</div>
+    <div><strong>Context</strong>Website redesign, mid-sized technical services company</div>
+    <div><strong>Method</strong>Content audit + structured redesign proposal</div>
+    <div><strong>Status</strong>Retrospective case study</div>
+  </div>
+</div>
+
+<div class="content">
+
+  <div class="section">
+    <div class="section-label">The question</div>
+    <h2>What users need from a technical services website</h2>
+    <p>Users arriving at a technical services website typically have a specific, practical problem. They need to establish quickly whether the company can help them, what that involves, and how to make contact. If the site does not support that sequence directly, the consequence is often invisible internally: lower conversion, weaker trust signals, and increased abandonment, with no clear feedback mechanism to identify the cause.</p>
+    <p>The more common pattern is a site built to reflect internal priorities: service categories that map to how the company is organised, language that assumes industry familiarity, and calls to action that are understated. The result is content that functions well for people who already know the company, and less well for those who do not.</p>
+    <div class="box">
+      <strong>This case examines that pattern in a specific context:</strong> a website redesign for a mid-sized technical services company, initiated by a supplier offer and a recent acquisition, produced without prior alignment on user priorities, content ownership, or brand governance. The analysis identifies the structural conditions that limited the outcome, and what a more user-centred approach would have addressed.
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">01 — The Starting Point</div>
+    <h2>Structural problems in the existing site</h2>
+    <p>Corex Technical Services had operated for over 40 years. Their website had developed incrementally, with pages added as internal needs arose rather than as part of a structured content model. Several problems had accumulated by the time the redesign was initiated.</p>
+    <div class="problem-grid">
+      <div class="problem-card">
+        <h4>Undifferentiated audience addressing</h4>
+        <p>Private customers, public institutions, and commercial contractors were addressed from the same homepage with the same entry point and the same language. No routing, no hierarchy, no differentiation by user need or context.</p>
+      </div>
+      <div class="problem-card">
+        <h4>Fragmented and outdated content</h4>
+        <p>Information was distributed across multiple pages, some several years old. The same service appeared in different forms in different sections, with no clear indication of which was current or authoritative.</p>
+      </div>
+      <div class="problem-card">
+        <h4>Internally oriented language</h4>
+        <p>Copy reflected how the company categorised its own services rather than how a user would search for or evaluate them. Terminology assumed familiarity with the industry and the company's internal structure.</p>
+      </div>
+      <div class="problem-card">
+        <h4>Absent or weak calls to action</h4>
+        <p>There was no clear conversion path. A user wanting to book a job had to navigate across multiple pages to establish who to contact and how, with no single prioritised action visible on arrival.</p>
+      </div>
+      <div class="problem-card">
+        <h4>Generic visual content</h4>
+        <p>The site relied on stock photography with no connection to actual staff, locations, or work. This is a common constraint, but it reduces the specificity and credibility of the content it accompanies.</p>
+      </div>
+      <div class="problem-card">
+        <h4>No stated value proposition</h4>
+        <p>The site described service categories but did not articulate what made the company a specific, considered choice for a specific user. The absence of a clear value proposition is particularly consequential on a homepage competing for a user's attention and trust.</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">02 — Project Initiation</div>
+    <h2>How the redesign came about</h2>
+    <p>The redesign was initiated by two overlapping circumstances. The company's web provider offered a no-cost redesign as part of a long-standing contract, and the company had recently acquired a smaller regional firm, Mikkelsen Drift &amp; Montage, which had been experiencing financial difficulties common to smaller independent trades businesses. Both events occurred within the same period.</p>
+    <p>The formal arrangement for the acquisition was that the two companies would operate as equal partners on a shared digital platform, each retaining its own name, identity, and customer relationships. In practice, the two organisations differed significantly in scale, geographic base, and organisational culture. Mikkelsen Drift &amp; Montage had a strong local identity and a customer base built on long-standing personal relationships. The question of how to represent that partnership on a shared website was more structurally complex than the formal arrangement acknowledged.</p>
+    <div class="box-warn">
+      <strong>Key implication for the project:</strong> The redesign was triggered by an available resource and an integration requirement, not by a strategic assessment of what the site needed to do differently for its users. The project began without a shared brief, agreed user priorities, or a defined content strategy. These conditions shaped what the finished site could become.
+    </div>
+    <p>The web provider's role is also relevant to the governance picture. The contract allowed the company to make minor updates independently, but structural changes required the provider's involvement. The provider acted on instructions received by email or phone, without a content strategy or governance document to reference. This made consistent, user-oriented decision-making across the site harder to maintain over time.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">03 — Structural Conditions</div>
+    <h2>Factors that shaped what was possible</h2>
+    <p>Several conditions were in place before production began that determined the ceiling for what the redesign could achieve.</p>
+    <div class="process-steps">
+      <div class="process-step">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <h4>Distributed ownership across service specialisms</h4>
+          <p>The company had multiple partners, each with primary responsibility for a different service area: private customers, public institutions, commercial projects. Content decisions touching those areas required input from the relevant partner. There was no single content authority. Content priorities were therefore negotiated rather than set against a shared user model.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <h4>No budget for original visual content</h4>
+          <p>No photography was commissioned for the redesign. The acquired company's premises, staff, and work could not be documented. The web provider's design drafts arrived with placeholder stock images sourced from unrelated contexts, requiring every image to be reviewed and replaced manually. Stock imagery in a trades context signals generic rather than specific, directly affecting the credibility of the content around it.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <h4>Content work understood as text production</h4>
+          <p>Within the organisation, content production was understood primarily as a writing task: draft text, supply images, hand to the provider. The research, structuring, and iterative revision involved in producing user-oriented content was not part of the shared understanding of the work. This affected how the project was resourced and how it was prioritised alongside other operational demands.</p>
+        </div>
+      </div>
+      <div class="process-step">
+        <div class="step-num">4</div>
+        <div class="step-content">
+          <h4>Unresolved brand relationship between the two companies</h4>
+          <p>The formal equal-partner arrangement did not resolve the practical question of how the two companies should be presented together on a single platform. Questions about naming, visual hierarchy, and content allocation were addressed during production rather than before it. The unresolved relationship between the two brands was effectively pushed into the website structure and content decisions.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section">
+    <div class="section-label">04 — Production</div>
+    <h2>How the conditions affected the work</h2>
+    <p>Content decisions were made incrementally throughout production, often in response to stakeholder input rather than against a defined user model. Content drafted with user needs as the primary frame was sometimes revised to reflect what was internally significant at a given moment: a recently acquired qualification in a specialist area, a service a particular partner wanted to emphasise, a distinction between the two companies that needed to be preserved. This is a common pattern in organisations where content strategy has not been established as a function. It reflects the absence of a shared reference point, not a lack of care for the user.</p>
+    <div class="box">
+      <strong>The dual-brand challenge in practice.</strong> Presenting Corex Technical Services and Mikkelsen Drift &amp; Montage as equal partners on a single platform required every design element to satisfy two separate identities simultaneously. Without a prior agreement on how the partnership should be represented visually and structurally, these decisions were made case by case during production. The result reflected the negotiation process rather than a coherent user experience.
+    </div>
+    <div class="mockup-container">
+      <div class="mockup-label">
+        <strong>BEFORE:</strong> Corex Technical Services + Mikkelsen Drift &amp; Montage — homepage structure
+        <br><em>Deliberately simplified. Colours, names, and layout are illustrative only, chosen to show structural patterns, not to represent any real company.</em>
+      </div>
+      <div class="b-nav">
+        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+          <div class="b-logo-a">COREX TECHNICAL SERVICES</div>
+          <div class="b-logo-sep">|</div>
+          <div class="b-logo-b">MIKKELSEN DRIFT &amp; MONTAGE</div>
+        </div>
+        <div class="b-nav-links">
+          <span>About us <span class="annotation">4 sub-pages</span></span>
+          <span>Private</span>
+          <span>Commercial</span>
+          <span>Public sector</span>
+          <span>Projects</span>
+          <span>Contact</span>
+        </div>
+      </div>
+      <div class="b-hero">
+        <div class="b-stock-note">Stock image: generic industrial context, no connection to company or work</div>
+        <h2>Welcome to Corex Technical Services &amp; Mikkelsen Drift &amp; Montage</h2>
+        <p>A combined authorised technical services company with locations across the region. We handle residential jobs, large-scale commercial projects, and complex technical installations.</p>
+        <span class="b-cta-a">Request a callback</span>
+        <span class="b-cta-b">About Mikkelsen Drift &amp; Montage</span>
+      </div>
+      <div class="b-body">
+        <div class="b-col">
+          <h4>Transparency and clear communication <span class="annotation">No specifics</span></h4>
+          <p>[Value statement in general terms. No concrete information about process, pricing, or what the user should expect. Framed from the company's perspective rather than the user's situation.]</p>
+        </div>
+        <div class="b-col">
+          <h4>Individual needs and attention to detail <span class="annotation">Repeats col. 1</span></h4>
+          <p>[Second value statement restating the same claims in different words. No new information. No differentiation between the two companies or their respective service strengths.]</p>
+        </div>
+        <div class="b-col flagged">
+          <h4>What we do <span class="annotation">12 items, no hierarchy</span></h4>
+          <p>[Undifferentiated list of all services, residential, commercial, specialist, and legacy, with no indication of which apply to which customer type or which to prioritise.]</p>
+        </div>
+      </div>
+    </div>
+    <p>The annotated patterns reflect structural decisions made under the conditions described: competing brand identities without a defined hierarchy, value claims without supporting specifics, and an undifferentiated service catalogue built from internal categories rather than user needs.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">05 — Outcome</div>
+    <h2>What was delivered</h2>
+    <p>The site launched with substantially improved content: more consistent, more accurately written, and better structured than what it replaced. Navigation was simplified. The acquisition was integrated. The site was a functional improvement on the brief it was given.</p>
+    <p>Several structural questions remained unresolved throughout production, limiting how coherent the final user experience could become. The three-audience problem was not resolved at the information architecture level. The brand relationship between the two companies was represented but not clearly defined for the user. The absence of original photography meant the visual layer remained generic.</p>
+    <p>The production timeline extended significantly beyond initial expectations. In part this reflected the content complexity involved. In part it reflected the structural conditions: content decisions that touched on unresolved strategic questions required additional alignment before they could be finalised. In an organisation without an established content function, that alignment had to be built iteratively rather than drawn from an agreed brief.</p>
+  </div>
+
+  <div class="section">
+    <div class="section-label">06 — Redesign Proposal</div>
+    <h2>Here is what I would have done differently</h2>
+    <p>The most consequential difference between the project as it ran and a more effective version of it is not a design decision. It is prior alignment on four questions that need agreed answers before production begins.</p>
+    <div class="box">
+      <strong>Required before production:</strong> Who are the primary user types, and which takes priority on the homepage? What does each user type need to accomplish in their first interaction with the site? Who has decision-making authority on content questions? And how is the relationship between the two companies defined, specifically enough to be designed and maintained consistently?
+    </div>
+    <p>With those questions answered, content and structural decisions can be evaluated against a shared reference point rather than negotiated individually. The three-audience problem has a straightforward structural solution once the priority order is agreed: audience-specific entry points from the homepage, with content and language calibrated to each user's context and task.</p>
+    <p>The dual-brand question also has a structural solution, but it requires a governance decision first. If Corex Technical Services is the primary company on the platform and Mikkelsen Drift &amp; Montage is a partner with a distinct local identity, that relationship can be designed clearly: a single primary brand in the navigation, with Mikkelsen Drift &amp; Montage given its own defined section rather than competing for space across every page. Both companies retain what differentiates them. The user has a coherent experience of each.</p>
+    <div class="mockup-container">
+      <div class="mockup-label">
+        <strong>PROPOSAL:</strong> Restructured homepage, audience-first architecture
+        <br><em>Deliberately simplified. Intended to illustrate structural and language decisions, not final visual design.</em>
+      </div>
+      <div class="a-nav">
+        <div class="a-logo">Corex <span>Technical Services</span></div>
+        <div class="a-nav-links">
+          <span class="active">Private</span>
+          <span>Commercial</span>
+          <span>Public sector</span>
+          <span>Projects</span>
+          <span class="partner">Mikkelsen Drift &amp; Montage</span>
+        </div>
+      </div>
+      <div class="a-hero">
+        <div class="a-hero-text">
+          <h2>Technical services you can<br><em>rely on from the start.</em></h2>
+          <p>One point of contact. No surprises on the invoice. We agree on the scope before we begin.</p>
+          <div>
+            <span class="a-cta-primary">Request a callback today</span>
+            <span class="a-cta-sec">See what we do</span>
+          </div>
+        </div>
+        <div class="a-user-cards">
+          <div class="a-user-card"><strong>Private customer?</strong>Inspections, lighting, renovation and new build. Start here.</div>
+          <div class="a-user-card"><strong>Business or institution?</strong>IT installations, fire safety, large projects. See our commercial services.</div>
+          <div class="a-user-card"><strong>In the Mikkelsen Drift &amp; Montage area?</strong>Our local partner with 30 years of experience in the region.</div>
+        </div>
+      </div>
+      <div class="a-body">
+        <div class="a-main">
+          <h4>What can we help with?</h4>
+          <div class="service-tiles">
+            <div class="service-tile"><strong>Electrical inspection</strong><p>Full review with a written report. For home buyers, insurers, or peace of mind.</p></div>
+            <div class="service-tile"><strong>Renovation and new build</strong><p>From a single socket to a full installation. We coordinate with other trades on site.</p></div>
+            <div class="service-tile"><strong>Smart building installations</strong><p>Lighting, heating, and security integrated into one system.</p></div>
+            <div class="service-tile"><strong>Fire safety and alarms</strong><p>Certified systems for businesses and public buildings.</p></div>
+          </div>
+        </div>
+        <div class="a-sidebar">
+          <h4>Get started</h4>
+          <div class="a-cta-box">
+            <strong style="color:var(--navy);display:block;margin-bottom:8px;font-family:Arial,sans-serif;font-size:9pt;">Request a callback</strong>
+            <p>Describe the job briefly and we will call you back to agree next steps.</p>
+            <button>Send request</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <table class="compare">
+      <tr><th>Element</th><th>As built</th><th class="teal">Proposal</th></tr>
+      <tr><td>Brand relationship</td><td class="was">Two identities in parallel, relationship undefined for the user</td><td class="now">Primary brand established; partner given a defined, separate section</td></tr>
+      <tr><td>Opening message</td><td class="was">Company description and undifferentiated value claims</td><td class="now">User-oriented value proposition, one sentence</td></tr>
+      <tr><td>Audience routing</td><td class="was">Single homepage for all user types, no differentiation</td><td class="now">Explicit entry points by user type, visible on arrival</td></tr>
+      <tr><td>Primary action</td><td class="was">Contact option present but not prioritised</td><td class="now">Single primary action, consistently prominent</td></tr>
+      <tr><td>Service overview</td><td class="was">Full catalogue, no user context or hierarchy</td><td class="now">Four user-relevant descriptions with practical framing</td></tr>
+      <tr><td>Visual content</td><td class="was">Generic stock imagery, no specificity to company or work</td><td class="now">Photography brief for real staff and real work; one location as starting point if budget is constrained</td></tr>
+    </table>
+  </div>
+
+  <div class="answer-box">
+    <h3>So, were they speaking to themselves?</h3>
+    <p>In structural terms, yes. The site reflected how the organisation understood itself more than how a user would arrive at it. That is a common outcome when a redesign begins without agreed answers to the foundational questions: who is the site for, what does each user type need to do, and who has the authority to make those answers consistent across the content.</p>
+    <p>The organisational conditions described here are not unusual. Distributed ownership, limited visual content budgets, and unresolved brand relationships are common constraints in smaller organisations undertaking a web redesign without an established content function. What changes the outcome is whether those conditions are identified and addressed before production begins, or worked around after the fact.</p>
+    <p class="closing">The structural and language decisions in the proposal above are straightforward to execute once the governance questions are resolved. That prior conversation is where the work actually starts.</p>
+  </div>
+
+  <hr class="rule">
+  <div class="tags" style="margin-top:28px;">
+    <span class="tag">Content strategy</span>
+    <span class="tag">Information architecture</span>
+    <span class="tag">UX writing</span>
+    <span class="tag">Brand governance</span>
+    <span class="tag">Audience segmentation</span>
+    <span class="tag">Retrospective case study</span>
+  </div>
+
+</div>
+
+<footer>
+  <a href="index.html">madevisible</a> &middot; UX Writer &middot; Information Design &middot; Narrative Systems &middot; <a href="mailto:amhpjobs@gmail.com">amhpjobs@gmail.com</a>
+</footer>
+
+</body>
+</html>
